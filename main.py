@@ -1,4 +1,5 @@
 import json
+import random
 from pokemon import Pokemon
 from estructuras.hash_map import HashMap
 from estructuras.hash_set import HashSet
@@ -16,12 +17,17 @@ def cargar_pokedex():
 
 def cargar_medallas():
     medallas = HashSet()
-    with open("data/medallas.json", "r", encoding="utf-8") as archivo:
-        datos = json.load(archivo)
-        medallas.agregar(datos[0])
-        medallas.agregar(datos[1])
+    with open("data/medallas.txt", "r", encoding="utf-8") as archivo:
+        lineas = [linea.strip() for linea in archivo]
+    medallas.agregar(lineas[0])
+    medallas.agregar(lineas[1])
     return medallas
 
+    return medallas
+def cargar_gimnasios():
+    with open("data/medallas.txt", "r", encoding="utf-8") as archivo:
+        return [linea.strip() for linea in archivo]
+    
 def mostrar_equipo(equipo):
     if len(equipo) == 0:
         print("No hay Pokemon en el equipo aun")
@@ -30,7 +36,7 @@ def mostrar_equipo(equipo):
             print(pokemon)
 
 def mostrar_menu():
-    print("=== POKEMON HUERGO ===")
+    print("POKEMON HUERGO:")
     print("1. Ver Pokedex")
     print("2. Ver Equipo Principal")
     print("3. Ver PC")
@@ -41,11 +47,13 @@ def mostrar_menu():
     print("8. Transferir Pokemon al Profesor Oak")
     print("9. Deshacer ultima transferencia")
     print("10. Desafiar Lider de Gimnasio")
+    print("11. Ver medallas")
     print("0. Salir")
 
 pokedex = cargar_pokedex()
 medallas = cargar_medallas()
 print(medallas.valores())
+gimnasios = cargar_gimnasios()
 
 equipo_principal = []
 print("Cantidad de Pokemon cargados:", len(list(pokedex.valores())))
@@ -57,16 +65,16 @@ while True:
 
     opcion = input("Seleccione una opcion: ")
     if opcion == "1":
-        print("=== POKEDEX ===")
+        print("POKEDEX:")
         for pokemon in pokedex.valores():
             print(pokemon)
 
     elif opcion == "2":
-        print("=== EQUIPO PRINCIPAL ===")
+        print("EQUIPO PRINCIPAL: ")
         mostrar_equipo(equipo_principal)
 
     elif opcion == "3":
-        print("=== PC POKEMON ===")
+        print("PC POKEMON:")
         pc.mostrar()
 
     elif opcion == "4":
@@ -106,7 +114,31 @@ while True:
         print("Deshacer ultima transferencia")
 
     elif opcion == "10":
-        print("Desafiar Lider de Gimnasio")
+        print("GIMNASIOS:")
+        for i in range(len(gimnasios)):
+            print(f"{i + 1}. {gimnasios[i]}")
+        opcion_gimnasio = int(input("Seleccione un gimnasio: "))
+        if 1 <= opcion_gimnasio <= len(gimnasios):
+            medalla = gimnasios[opcion_gimnasio - 1]
+            gano = random.choice([True, False])
+            if gano:
+                print("¡¡Ganaste la batalla!!")
+                if medallas.contiene(medalla):
+                    print("Ya tenias esta medalla")
+                else:
+                    medallas.agregar(medalla)
+                    print(f"Obtuviste la {medalla}")
+
+            else:
+                print("Perdiste la batalla")
+
+        else:
+            print("Gimnasio invalido")
+
+    elif opcion == "11":
+        print("MEDALLAS:")
+        for medalla in medallas.valores():
+            print(medalla)        
 
     elif opcion == "0":
         print("Saliendo del sistema...")
