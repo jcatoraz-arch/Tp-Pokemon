@@ -1,10 +1,15 @@
 import json
+import os
 import random
 from pokemon import Pokemon
 from estructuras.hash_map import HashMap
 from estructuras.hash_set import HashSet
 from estructuras.lista_enlazada import ListaEnlazada
 from estructuras.queue import Queue
+from algoritmos.ordenamientos import *
+
+def limpiar_pantalla():
+    os.system("cls")
 
 def cargar_pokedex():
     pokedex = HashMap()
@@ -23,7 +28,6 @@ def cargar_medallas():
     medallas.agregar(lineas[1])
     return medallas
 
-    return medallas
 def cargar_gimnasios():
     with open("data/medallas.txt", "r", encoding="utf-8") as archivo:
         return [linea.strip() for linea in archivo]
@@ -34,6 +38,12 @@ def mostrar_equipo(equipo):
     else:
         for pokemon in equipo:
             print(pokemon)
+
+def buscar_pokemon(nombre, lista):
+    for pokemon in lista:
+        if pokemon.nombre.lower() == nombre.lower():
+            return pokemon
+    return None
 
 def mostrar_menu():
     print("POKEMON HUERGO:")
@@ -61,6 +71,7 @@ pc = ListaEnlazada()
 centro_pokemon = Queue()
 
 while True:
+    limpiar_pantalla()
     mostrar_menu()
 
     opcion = input("Seleccione una opcion: ")
@@ -68,33 +79,62 @@ while True:
         print("POKEDEX:")
         for pokemon in pokedex.valores():
             print(pokemon)
+        input("Presione enter para continuar")
 
     elif opcion == "2":
         print("EQUIPO PRINCIPAL: ")
         mostrar_equipo(equipo_principal)
+        input("Presione enter para continuar")
 
     elif opcion == "3":
         print("PC POKEMON:")
         pc.mostrar()
+        input("Presione enter para continuar")
 
     elif opcion == "4":
-        id_pokemon = int(input("Ingrese el ID del Pokemon a capturar: "))
-        pokemon = pokedex.obtener(id_pokemon)
+        pokemon = random.choice(list(pokedex.valores()))
+        print(f"Aparecio un {pokemon.nombre}")
+        if len(equipo_principal) < 6:
+            equipo_principal.append(pokemon)
+            print(f"{pokemon.nombre} agregado al equipo")
+        else:
+            pc.agregar_inicio(pokemon)
+            print(f"Equipo lleno. {pokemon.nombre} enviado a la PC")
+        input("Presione enter para continuar")
+
+    elif opcion == "5":
+        print("ORDENAR PC:")
+        print("1 - Ordenar por nombre")
+        print("2 - Ordenar por tipo")
+        print("3 - Ordenar por poder de combate")
+        opcion_orden = input("Seleccione una opcion: ")
+        lista_pc = pc.a_lista()
+        if opcion_orden == "1":
+            bubble_sort_nombre(lista_pc)
+            pc.desde_lista(lista_pc)
+            print("PC ordenada por nombre")
+        elif opcion_orden == "2":
+            insertion_sort_tipo(lista_pc)
+            pc.desde_lista(lista_pc)
+            print("PC ordenada por tipo")
+        elif opcion_orden == "3":
+            lista_pc = quick_sort_poder(lista_pc)
+            pc.desde_lista(lista_pc)
+            print("PC ordenada por poder de combate")
+        else:
+            print("Opcion invalida")
+        input("Presione enter para continuar")
+
+    elif opcion == "6":
+        nombre = input("Ingrese el nombre del Pokemon: ")
+        pokemon = buscar_pokemon(nombre, equipo_principal)
         if pokemon:
-            if len(equipo_principal) < 6:
-                equipo_principal.append(pokemon)
-                print(f"{pokemon.nombre} agregado al equipo")
-            else:
-                pc.agregar_inicio(pokemon)
-                print(f"Equipo lleno, {pokemon.nombre} enviado a la PC")
+            print("Pokemon encontrado:")
+            print(pokemon)
         else:
             print("Pokemon no encontrado")
 
-    elif opcion == "5":
-        print("Ordenar PC")
-
-    elif opcion == "6":
-        print("Buscar Pokemon en Equipo")
+        input("Presione enter para continuar")
 
     elif opcion == "7":
         if len(equipo_principal) == 0:
@@ -106,12 +146,15 @@ while True:
             while not centro_pokemon.esta_vacia():
                 pokemon = centro_pokemon.desencolar()
                 print(f"{pokemon.nombre} ha sido curado")
+        input("Presione enter para continuar")
 
     elif opcion == "8":
         print("Transferir Pokemon al Profesor Oak")
+        input("Presione enter para continuar")
 
     elif opcion == "9":
         print("Deshacer ultima transferencia")
+        input("Presione enter para continuar")
 
     elif opcion == "10":
         print("GIMNASIOS:")
@@ -134,11 +177,13 @@ while True:
 
         else:
             print("Gimnasio invalido")
+        input("Presione enter para continuar")
 
     elif opcion == "11":
         print("MEDALLAS:")
         for medalla in medallas.valores():
             print(medalla)        
+        input("Presione enter para continuar")
 
     elif opcion == "0":
         print("Saliendo del sistema...")
